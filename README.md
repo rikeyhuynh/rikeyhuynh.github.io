@@ -1,2 +1,768 @@
-# alwaysbesideminhtin
-minhtin | Show It All Vietnam 2025
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>minhtin | Show It All Vietnam 2025</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800;900&family=Oswald:wght@400;500;700&family=Inter:wght@300;400;600;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap&subset=vietnamese" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            blue: '#0029FF',    /* Ultra Klein Blue */
+                            dark: '#050505',    /* Void Black */
+                            light: '#EAEAEA',   /* Concrete White */
+                            acid: '#CCFF00',    /* Toxic Green */
+                            red: '#FF1F1F',     /* Alert Red */
+                            brown: '#8B4513',   /* Rank C Color */
+                            aurora: '#A855F7',  /* Aurora Purple */
+                        }
+                    },
+                    fontFamily: {
+                        display: ['"Oswald"', 'sans-serif'],
+                        massive: ['"Montserrat"', 'sans-serif'], 
+                        condensed: ['"Oswald"', 'sans-serif'],
+                        tech: ['"Space Mono"', 'monospace'],
+                        body: ['"Inter"', 'sans-serif'],
+                    },
+                    backgroundImage: {
+                        'grid': "linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px)",
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* --- GLOBAL --- */
+        :root { --cursor-size: 20px; }
+        body { background-color: #EAEAEA; color: #050505; overflow-x: hidden; font-family: 'Inter', sans-serif; cursor: none; }
+        ::selection { background: #0029FF; color: #fff; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #CCFF00; }
+
+        /* --- CURSOR (Hidden on touch devices usually, but kept for logic) --- */
+        #cursor { position: fixed; top: 0; left: 0; width: var(--cursor-size); height: var(--cursor-size); background: #0029FF; border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); mix-blend-mode: difference; }
+        #cursor-follower { position: fixed; top: 0; left: 0; width: 50px; height: 50px; border: 1px solid #0029FF; border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%, -50%); transition: transform 0.15s ease-out; }
+        @media (hover: none) { #cursor, #cursor-follower { display: none; } body { cursor: auto; } }
+
+        /* --- UTILS --- */
+        .text-stroke { -webkit-text-stroke: 2px #000; color: transparent; }
+        .img-cover { width: 100%; height: 100%; object-fit: cover; }
+        .neo-card { background: #fff; border: 3px solid #000; box-shadow: 8px 8px 0px 0px #000; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
+        .neo-card:hover { transform: translate(-4px, -4px); box-shadow: 16px 16px 0px 0px #0029FF; }
+        .card-frozen { background: #EFF6FF; border-color: #3B82F6; box-shadow: 8px 8px 0px 0px #93C5FD; }
+        
+        .loader-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: flex; justify-content: center; align-items: center; flex-direction: column; }
+        .loader-bar-bg { width: 300px; height: 2px; background: #333; margin-top: 20px; }
+        .loader-bar-fill { height: 100%; background: #CCFF00; width: 0%; }
+        
+        .marquee-container { overflow: hidden; white-space: nowrap; }
+        .marquee-content { display: inline-block; animation: marquee 20s linear infinite; }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        
+        .blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.4; z-index: 0; animation: float 10s infinite ease-in-out; }
+    </style>
+</head>
+<body class="bg-brand-light font-body selection:bg-brand-acid selection:text-black">
+
+    <div id="cursor"></div>
+    <div id="cursor-follower"></div>
+
+    <div class="loader-screen" id="loader">
+        <div class="font-massive font-black text-4xl md:text-9xl text-white tracking-tighter" id="loader-text">minhtin</div>
+        <div class="loader-bar-bg"><div class="loader-bar-fill" id="loader-bar"></div></div>
+        <div class="mt-4 font-tech text-brand-acid text-xs tracking-[0.5em]">SYSTEM LOADING...</div>
+    </div>
+
+    <nav class="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b-2 border-black h-16 md:h-20 transition-all duration-300">
+        <div class="container mx-auto px-6 flex justify-between items-center h-full">
+            <a href="#" class="font-display font-bold text-2xl md:text-4xl tracking-tighter hover:text-brand-blue transition cursor-hover">
+                minhtin<span class="text-brand-blue">.</span>
+            </a>
+            <div class="hidden md:flex gap-12 font-tech font-bold uppercase text-sm tracking-widest">
+                <a href="#profile" class="hover:text-brand-blue transition py-2">Hồ Sơ</a>
+                <a href="#journey" class="hover:text-brand-blue transition py-2">Hành Trình</a>
+                <a href="#music" class="hover:text-brand-blue transition py-2">Music Lab</a>
+            </div>
+            <a href="https://fb.com/tinnn2908" target="_blank" class="hidden md:flex items-center gap-2 bg-black text-white px-6 py-2 font-bold text-xs uppercase hover:bg-brand-blue hover:scale-105 transition shadow-[4px_4px_0px_#0029FF] cursor-hover">
+                Facebook <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+    </nav>
+
+    <header class="relative min-h-screen pt-20 flex flex-col justify-center overflow-hidden bg-brand-light bg-grid">
+        <div class="absolute top-1/4 left-10 w-20 h-20 md:w-40 md:h-40 bg-brand-blue rounded-full blur-[60px] opacity-40 animate-pulse"></div>
+        <div class="absolute bottom-1/4 right-10 w-40 h-40 md:w-60 md:h-60 bg-brand-acid rounded-full blur-[80px] opacity-40 animate-pulse"></div>
+
+        <div class="container mx-auto px-6 grid lg:grid-cols-12 gap-12 items-center relative z-10 py-12">
+            
+            <div class="lg:col-span-7 relative z-20">
+                <div class="inline-block bg-black text-white px-4 py-1 font-tech font-bold uppercase text-xs mb-6 transform -rotate-1 border border-white">
+                    Show It All Vietnam 2025
+                </div>
+
+                <h1 class="font-massive font-black text-6xl md:text-[8rem] lg:text-[10rem] xl:text-[11rem] leading-[0.9] uppercase text-black mb-4 tracking-tighter pb-4">
+                    minh<br>
+                    <span class="text-stroke text-transparent hover:text-black transition duration-500 cursor-default">tin</span>
+                </h1>
+
+                <div class="flex flex-wrap items-center gap-3 md:gap-6 mt-2">
+                    <div class="h-1 w-10 md:w-20 bg-brand-blue"></div>
+                    <p class="font-condensed font-bold text-xl md:text-4xl text-gray-500 uppercase">
+                        All Rounder <span class="text-brand-blue">•</span> Visual <span class="text-brand-blue">•</span> Dancer
+                    </p>
+                </div>
+
+                <div class="mt-6 md:mt-10 max-w-xl text-base md:text-lg font-body leading-relaxed text-gray-800 border-l-4 border-black pl-6">
+                    Từ thành viên <span class="font-bold bg-brand-acid px-1">POONG Crew</span> đến ngôi sao toàn năng. Hành trình bùng nổ của Visual, Dancer & Vocal thế hệ mới.
+                </div>
+
+                <div class="mt-8 md:mt-12 flex gap-4">
+                    <a href="#journey" class="bg-brand-blue text-white px-6 py-3 md:px-10 md:py-4 font-display font-bold text-lg md:text-xl uppercase border-2 border-black hover:bg-black transition shadow-[4px_4px_0px_#000] md:shadow-[8px_8px_0px_#000] cursor-hover">
+                        Khám Phá
+                    </a>
+                </div>
+            </div>
+
+            <div class="lg:col-span-5 relative flex items-center justify-center">
+                <div class="absolute w-full h-[95%] bg-black border-2 border-black rotate-3 z-0 rounded-sm"></div>
+                <div class="absolute w-full h-[95%] bg-brand-acid border-2 border-black -rotate-2 z-10 rounded-sm"></div>
+                
+                <div class="relative w-full aspect-[3/4] max-h-[550px] bg-white border-2 border-black z-20 overflow-hidden group cursor-hover shadow-xl">
+                    <img src="https://scontent.fdad3-5.fna.fbcdn.net/v/t39.30808-6/557620592_122105284071032425_4390258640503031565_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeEdMaEJIMDZuT_AoE2qf6EZP834g3aJrYI_zfiDdomtgk_XuDKMiz380agaI3j_0Ju9fOMIl5aQfV2KnrHScvF9&_nc_ohc=Mm8FIha3b8IQ7kNvwEMLfGw&_nc_oc=AdmDRTpdpFh-BQ9SaFRtVsbRX7xEinQzOxjjsW6Wib_6IC9QsxrklDf2Y0gRY4zvloI&_nc_zt=23&_nc_ht=scontent.fdad3-5.fna&_nc_gid=LVNnsz6LTGJskTw8Udwetg&oh=00_Afk8zourIcCJOAIkjecBUROwhd9zCMSOT641bxQGkUXxfA&oe=6936D3C5" class="img-cover object-top transition duration-700 scale-105 group-hover:scale-100">
+                    <div class="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-black via-black/80 to-transparent">
+                        <div class="text-brand-acid font-tech text-xs font-bold uppercase mb-1">Status</div>
+                        <div class="text-white font-display font-bold text-4xl">MOOD MAKER</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="bg-brand-blue border-y-4 border-black py-4 overflow-hidden relative z-30 -rotate-1 scale-105 shadow-xl">
+        <div class="marquee-container">
+            <div class="marquee-content font-massive font-bold text-2xl md:text-4xl text-white uppercase">
+                Show It All 2025 <span class="text-black mx-4">///</span> 
+                Top 11 Debut <span class="text-black mx-4">///</span> 
+                High Note Specialist <span class="text-black mx-4">///</span> 
+                Main Dancer Material <span class="text-black mx-4">///</span> 
+                Visual <span class="text-black mx-4">///</span>
+            </div>
+        </div>
+    </div>
+
+    <section id="profile" class="py-20 md:py-32 bg-white relative overflow-hidden">
+        <div class="absolute inset-0 bg-brand-light/20 bg-grid opacity-30 pointer-events-none"></div>
+        <div class="blob bg-brand-acid w-96 h-96 top-0 right-0 mix-blend-multiply"></div>
+        <div class="blob bg-brand-blue w-64 h-64 bottom-0 left-20 mix-blend-multiply delay-1000"></div>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-16">
+                <div class="lg:col-span-5 relative">
+                    <div class="relative md:sticky md:top-32">
+                        <div class="relative aspect-[3/4] border-4 border-black shadow-[8px_8px_0px_#CCFF00] md:shadow-[12px_12px_0px_#CCFF00] bg-white">
+                            <img src="https://scontent.fdad3-1.fna.fbcdn.net/v/t39.30808-6/593620174_122114298045032425_7809978002722725115_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeHN0DwvJdE_wBhDRm5-DZwlE-I5IYY--woT4jkhhj77Cg6-sIT3hlcvuZPT-RNbozUO5csB85oTsjEDW2_Trfn9&_nc_ohc=LtI2XvaYJDwQ7kNvwH_pt57&_nc_oc=AdlnUMpLO6RMooeiHbXVzcR7AKgE5rxr9uxtq6PpXIMoWOs9x0M4WCiHHvjfWxj1XMw&_nc_zt=23&_nc_ht=scontent.fdad3-1.fna&_nc_gid=oZCmiAlO5VSMromBWsf7Jw&oh=00_AfmiOtsxH6-VeXXxOh12_5TR-njIfG4G08fK_6OL0uW9ug&oe=6936CE91" class="img-cover object-top filter contrast-125">
+                            <div class="absolute top-4 left-4 bg-black text-white px-4 py-1 font-tech font-bold">minhtin.</div>
+                        </div>
+                        <div class="mt-6 flex justify-between font-tech text-sm font-bold border-b-2 border-black pb-2 bg-white/50 backdrop-blur-sm">
+                            <span>ID: @do.nathnim</span>
+                            <span>STATUS: ACTIVE</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-7 space-y-8 md:space-y-12">
+                    <div>
+                        <h2 class="font-massive font-black text-5xl md:text-8xl uppercase leading-[0.9]">Hồ Sơ <br><span class="text-brand-blue">Cá Nhân</span></h2>
+                        <div class="h-4 w-20 md:w-32 bg-brand-acid mt-4 md:mt-6 border border-black"></div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 md:gap-6">
+                        <div class="bg-brand-light p-4 md:p-8 border-2 border-black hover:bg-black hover:text-white transition group cursor-hover">
+                            <div class="text-xs md:text-sm font-tech font-bold opacity-50 mb-1 md:mb-2 uppercase">D.O.B</div>
+                            <div class="font-display font-bold text-3xl md:text-6xl group-hover:text-brand-acid">29.8.04</div>
+                        </div>
+                        <div class="bg-brand-light p-4 md:p-8 border-2 border-black hover:bg-black hover:text-white transition group cursor-hover">
+                            <div class="text-xs md:text-sm font-tech font-bold opacity-50 mb-1 md:mb-2 uppercase">Chiều Cao</div>
+                            <div class="font-display font-bold text-3xl md:text-6xl group-hover:text-brand-blue">1m77</div>
+                        </div>
+                        <div class="col-span-2 bg-brand-light p-4 md:p-8 border-2 border-black hover:bg-brand-blue hover:text-white transition group cursor-hover">
+                            <div class="text-xs md:text-sm font-tech font-bold opacity-50 mb-1 md:mb-2 uppercase">Quê Quán</div>
+                            <div class="font-display font-bold text-3xl md:text-6xl">TP. Hồ Chí Minh</div>
+                        </div>
+                    </div>
+
+                    <div class="border-t-4 border-black pt-8 md:pt-12">
+                        <h3 class="font-condensed font-bold text-3xl md:text-5xl uppercase mb-6 md:mb-8">Vũ Khí Bí Mật</h3>
+                        <div class="space-y-6">
+                            <div class="flex items-start gap-4 md:gap-6 group">
+                                <div class="font-display font-bold text-3xl md:text-4xl text-gray-300 group-hover:text-brand-blue transition">01</div>
+                                <div>
+                                    <h4 class="font-bold text-xl md:text-2xl uppercase font-display tracking-wide">Mood Maker</h4>
+                                    <p class="font-body text-sm md:text-base text-gray-600">Nguồn năng lượng tích cực luôn lan tỏa đến mọi người.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4 md:gap-6 group">
+                                <div class="font-display font-bold text-3xl md:text-4xl text-gray-300 group-hover:text-brand-blue transition">02</div>
+                                <div>
+                                    <h4 class="font-bold text-xl md:text-2xl uppercase font-display tracking-wide">Choreography Mindset</h4>
+                                    <p class="font-body text-sm md:text-base text-gray-600">Tư duy biên đạo sắc bén, khả năng dàn dựng sân khấu ấn tượng.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="journey" class="bg-brand-light relative overflow-hidden">
+        <div class="absolute inset-0 bg-grid opacity-20 pointer-events-none"></div>
+        
+        <div class="container mx-auto px-6 py-20 md:py-32 relative z-10">
+            <div class="text-center mb-16 md:mb-32">
+                <h2 class="font-massive font-black text-5xl md:text-[10rem] leading-none uppercase text-black mb-4">Hành Trình</h2>
+                <div class="inline-block bg-brand-blue text-white font-tech font-bold uppercase px-6 py-2 md:px-8 md:py-3 text-lg md:text-xl border-2 border-black shadow-[4px_4px_0px_#000] md:shadow-[8px_8px_0px_#000]">
+                    Road To Glory
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 relative border-t-2 border-black pt-12 md:pt-20">
+                <div class="lg:col-span-4">
+                    <div class="relative md:sticky md:top-32 mb-8 md:mb-0">
+                        <div class="font-massive font-black text-6xl md:text-8xl text-brand-acid opacity-40 absolute -top-6 -left-6 md:-top-10 md:-left-10 z-0">P1</div>
+                        <h3 class="font-display font-bold text-4xl md:text-5xl uppercase relative z-10 mb-2 md:mb-4">Project 100%</h3>
+                        <p class="font-body text-gray-600 font-bold">Khởi đầu gian nan, kết thúc huy hoàng.</p>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-8 relative">
+                    <div class="absolute left-4 md:left-8 top-0 bottom-0 w-1 bg-gray-300 -translate-x-1/2"></div>
+                    
+                    <div class="space-y-8 md:space-y-12">
+                        
+                        <div class="relative pl-14 md:pl-24">
+                            <div class="absolute left-4 md:left-8 top-8 w-6 h-6 bg-brand-brown border-4 border-white outline outline-2 outline-gray-300 rounded-full z-10 -translate-x-1/2"></div>
+                            <div class="neo-card p-4 md:p-6 flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-display font-bold text-xl md:text-2xl">Khởi Đầu</h4>
+                                    <p class="text-gray-600 text-sm">Đánh giá năng lực</p>
+                                </div>
+                                <span class="bg-[#8B4513] text-white px-2 py-1 md:px-4 md:py-2 font-bold font-tech text-xs md:text-sm border-2 border-black shadow-[2px_2px_0px_#000] md:shadow-[4px_4px_0px_#000]">RANK C</span>
+                            </div>
+                        </div>
+
+                        <div class="relative pl-14 md:pl-24">
+                            <div class="absolute left-4 md:left-8 top-8 w-6 h-6 bg-brand-blue border-4 border-white outline outline-2 outline-gray-300 rounded-full z-10 -translate-x-1/2"></div>
+                            <div class="neo-card p-4 md:p-6 flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-display font-bold text-xl md:text-2xl">Sát Hạch 1</h4>
+                                    <p class="text-gray-600 text-sm">Nỗ lực thăng hạng</p>
+                                </div>
+                                <span class="bg-brand-blue text-white px-2 py-1 md:px-4 md:py-2 font-bold font-tech text-xs md:text-sm border-2 border-black shadow-[2px_2px_0px_#000] md:shadow-[4px_4px_0px_#000]">RANK B</span>
+                            </div>
+                        </div>
+
+                        <div class="relative pl-14 md:pl-24">
+                            <div class="absolute left-4 md:left-8 top-8 w-6 h-6 bg-black border-4 border-white outline outline-2 outline-gray-300 rounded-full z-10 -translate-x-1/2"></div>
+                            <div class="neo-card p-4 md:p-6">
+                                <span class="font-tech text-xs font-bold text-gray-400">SÁT HẠCH 2</span>
+                                <h4 class="font-display font-bold text-2xl md:text-3xl mt-1">Show Me</h4>
+                                <p class="text-brand-blue font-bold mt-2 text-sm md:text-base">TOP 7 CENTER HỌP BÁO</p>
+                            </div>
+                        </div>
+
+                        <div class="relative pl-14 md:pl-24">
+                            <div class="absolute left-4 md:left-8 top-8 w-6 h-6 bg-brand-acid border-4 border-black outline outline-2 outline-gray-300 rounded-full z-10 -translate-x-1/2"></div>
+                            <div class="neo-card p-4 md:p-6 border-brand-acid">
+                                <div class="flex justify-between">
+                                    <span class="font-tech text-xs font-bold text-gray-400">SÁT HẠCH 3</span>
+                                    <span class="bg-brand-acid text-black px-2 py-0.5 text-xs font-bold border border-black">WINNER</span>
+                                </div>
+                                <h4 class="font-display font-bold text-2xl md:text-3xl mt-1">Beautiful Girl</h4>
+                                <p class="text-gray-600 mt-2 text-sm">Nhóm 1 (minhTin) <span class="font-bold text-black">VS</span> Nhóm 3</p>
+                            </div>
+                        </div>
+
+                        <div class="relative pl-14 md:pl-24">
+                            <div class="absolute left-4 md:left-8 top-8 w-6 h-6 bg-brand-acid border-4 border-black outline outline-2 outline-gray-300 rounded-full z-10 -translate-x-1/2"></div>
+                            <div class="neo-card p-4 md:p-6 border-brand-acid">
+                                <div class="flex justify-between">
+                                    <span class="font-tech text-xs font-bold text-gray-400">SÁT HẠCH 4</span>
+                                    <span class="bg-brand-acid text-black px-2 py-0.5 text-xs font-bold border border-black">WINNER</span>
+                                </div>
+                                <h4 class="font-display font-bold text-2xl md:text-3xl mt-1">Beautiful Girl (R&B)</h4>
+                                <p class="text-gray-600 mt-2 text-sm">Chiến thắng trước 3 nhóm còn lại</p>
+                            </div>
+                        </div>
+
+                        <div class="relative pl-14 md:pl-24">
+                            <div class="absolute left-4 md:left-8 top-1/2 w-4 h-1 bg-brand-aurora -translate-x-1/2 z-0"></div>
+                            <div class="inline-block bg-brand-aurora text-white font-tech font-bold text-[10px] md:text-xs uppercase px-2 py-1 md:px-3 md:py-1 -ml-2 rounded-r-md">
+                                TEAM THE AURORA • MENTOR KAY TRẦN
+                            </div>
+                        </div>
+
+                        <div class="relative pl-14 md:pl-24">
+                            <div class="absolute left-4 md:left-8 top-8 w-6 h-6 bg-black border-4 border-white outline outline-2 outline-gray-300 rounded-full z-10 -translate-x-1/2"></div>
+                            <div class="neo-card p-4 md:p-6">
+                                <span class="font-tech text-xs font-bold text-gray-400">SÁT HẠCH 5</span>
+                                <h4 class="font-display font-bold text-2xl md:text-3xl mt-1">Yêu 5</h4>
+                            </div>
+                        </div>
+
+                        <div class="relative pl-14 md:pl-24">
+                            <div class="absolute left-4 md:left-8 top-8 w-6 h-6 bg-black border-4 border-white outline outline-2 outline-gray-300 rounded-full z-10 -translate-x-1/2"></div>
+                            <div class="neo-card p-4 md:p-6">
+                                <span class="font-tech text-xs font-bold text-gray-400">SÁT HẠCH 6</span>
+                                <h4 class="font-display font-bold text-2xl md:text-3xl mt-1">Em Ơi Cứ Vui</h4>
+                            </div>
+                        </div>
+
+                        <div class="relative pl-14 md:pl-24">
+                            <div class="absolute left-4 md:left-8 top-8 md:top-10 w-8 h-8 bg-brand-blue border-4 border-white outline outline-2 outline-gray-300 rounded-full z-10 animate-pulse -translate-x-1/2"></div>
+                            <div class="neo-card p-6 md:p-8 border-brand-blue shadow-[4px_4px_0px_#0029FF] md:shadow-[8px_8px_0px_#0029FF]">
+                                <div class="flex justify-between">
+                                    <span class="font-tech text-xs font-bold text-brand-blue uppercase">Thử Thách Đặc Biệt</span>
+                                    <i class="fa-solid fa-trophy text-brand-blue"></i>
+                                </div>
+                                <h4 class="font-display font-bold text-3xl md:text-4xl mt-2">Đấu với TOP X</h4>
+                                <p class="font-massive font-bold text-xl md:text-2xl uppercase mt-2">CHIẾN THẮNG</p>
+                            </div>
+                        </div>
+
+                        <div class="relative pl-14 md:pl-24">
+                            <div class="absolute left-4 md:left-8 top-8 w-6 h-6 bg-black border-4 border-white outline outline-2 outline-gray-300 rounded-full z-10 -translate-x-1/2"></div>
+                            <div class="neo-card p-4 md:p-6">
+                                <span class="font-tech text-xs font-bold text-gray-400">SÁT HẠCH 7</span>
+                                <h4 class="font-display font-bold text-2xl md:text-3xl mt-1">GenZnius</h4>
+                            </div>
+                        </div>
+
+                        <div class="relative pl-14 md:pl-24">
+                            <div class="absolute left-4 md:left-8 top-8 w-8 h-8 bg-black border-4 border-brand-acid outline outline-2 outline-gray-300 rounded-full z-10 -translate-x-1/2"></div>
+                            <div class="bg-black text-white p-6 md:p-8 border-4 border-brand-acid relative overflow-hidden group shadow-[4px_4px_0px_#CCFF00] md:shadow-[8px_8px_0px_#CCFF00]">
+                                <div class="relative z-10">
+                                    <div class="flex justify-between items-start mb-4 md:mb-6">
+                                        <h3 class="font-massive font-bold text-3xl md:text-4xl text-brand-acid tracking-tighter">CHUNG KẾT</h3>
+                                        <span class="bg-brand-acid text-black font-tech font-bold px-2 py-1 text-xs">FINALE</span>
+                                    </div>
+                                    
+                                    <div class="grid gap-3 md:gap-4 mb-4 md:mb-6">
+                                        <div class="flex items-center gap-4 bg-white/10 p-3 border border-white/20">
+                                            <i class="fa-solid fa-music text-brand-acid"></i>
+                                            <span class="font-display font-bold text-lg md:text-xl">99KISS</span>
+                                        </div>
+                                        <div class="flex items-center gap-4 bg-white/10 p-3 border border-white/20">
+                                            <i class="fa-solid fa-music text-brand-acid"></i>
+                                            <span class="font-display font-bold text-lg md:text-xl">WE LIT THE SHOW</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="inline-block bg-white text-black px-4 py-1 md:px-6 md:py-2 font-display font-bold text-xl md:text-2xl uppercase transform -rotate-1 border-2 border-white hover:scale-105 transition">
+                                        TOP 11 DEBUT
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 relative border-t-2 border-black pt-12 md:pt-20 mt-12 md:mt-20">
+                <div class="lg:col-span-4">
+                    <div class="relative md:sticky md:top-32 mb-8 md:mb-0">
+                        <div class="font-massive font-black text-6xl md:text-8xl text-brand-blue opacity-40 absolute -top-6 -left-6 md:-top-10 md:-left-10 z-0">P2</div>
+                        <h3 class="font-display font-bold text-4xl md:text-5xl uppercase relative z-10 mb-2 md:mb-4">Show It All 2025</h3>
+                        <p class="font-body text-gray-600 font-bold">Thử thách quốc tế & Cú lội ngược dòng.</p>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-8 relative">
+                    <div class="absolute left-4 md:left-8 top-0 bottom-0 w-1 bg-gray-300 -translate-x-1/2"></div>
+
+                    <div class="space-y-8 md:space-y-12">
+                        
+                        <div class="relative pl-14 md:pl-24">
+                            <div class="absolute left-4 md:left-8 top-1/2 w-4 h-1 bg-brand-blue -translate-x-1/2 z-0"></div>
+                            <div class="inline-block bg-brand-blue text-white font-tech font-bold text-[10px] md:text-xs uppercase px-2 py-1 md:px-3 md:py-1 -ml-2 rounded-r-md">
+                                MENTOR SOOBIN
+                            </div>
+                        </div>
+
+                        <div class="relative pl-14 md:pl-24">
+                            <div class="absolute left-4 md:left-8 top-8 w-6 h-6 bg-white border-4 border-black outline outline-2 outline-gray-300 rounded-full z-10 -translate-x-1/2"></div>
+                            <div class="neo-card p-4 md:p-6 bg-gray-50">
+                                <span class="font-tech text-xs font-bold text-black bg-gray-200 px-2 py-1">CÔNG DIỄN 1</span>
+                                <div class="mt-4 space-y-2">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fa-solid fa-music text-xs"></i>
+                                        <span class="font-bold text-base md:text-lg">Đã Đến Lúc</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <i class="fa-solid fa-music text-xs"></i>
+                                        <span class="font-bold text-base md:text-lg">Exposure</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="relative pl-14 md:pl-24">
+                            <div class="absolute left-4 md:left-8 top-8 w-6 h-6 bg-brand-blue border-4 border-white outline outline-2 outline-gray-300 rounded-full z-10 -translate-x-1/2"></div>
+                            <div class="neo-card p-4 md:p-6 card-frozen relative overflow-hidden">
+                                <i class="fa-regular fa-snowflake absolute -right-4 -bottom-4 text-6xl md:text-8xl text-blue-200 opacity-50"></i>
+                                <div class="relative z-10">
+                                    <span class="font-tech text-xs font-bold text-white bg-blue-500 px-2 py-1">CÔNG DIỄN 2</span>
+                                    <div class="mt-4 mb-4 space-y-2">
+                                        <p class="font-bold text-lg md:text-xl">Không Cần Nói Nhiều</p>
+                                        <p class="font-bold text-lg md:text-xl">Beautiful Girl</p>
+                                    </div>
+                                    <div class="inline-block border-2 border-blue-500 text-blue-600 font-bold px-2 py-1 md:px-3 text-xs md:text-sm uppercase bg-white">
+                                        TRẠNG THÁI: ĐÓNG BĂNG
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="relative pl-14 md:pl-24">
+                            <div class="absolute left-4 md:left-8 top-8 w-8 h-8 bg-brand-acid border-4 border-black outline outline-2 outline-gray-300 rounded-full z-10 animate-spin-slow -translate-x-1/2"></div>
+                            <div class="neo-card p-6 md:p-8 border-brand-acid shadow-[4px_4px_0px_#CCFF00] md:shadow-[8px_8px_0px_#CCFF00]">
+                                <span class="font-tech text-xs font-bold text-black bg-brand-acid px-2 py-1 border border-black">CÔNG DIỄN 3</span>
+                                
+                                <div class="mt-4 md:mt-6 grid gap-4">
+                                    <div class="bg-gray-900 text-white p-4">
+                                        <p class="text-xs text-gray-400 mb-1">ĐỒNG ĐỘI</p>
+                                        <p class="font-bold text-base md:text-lg text-brand-acid">REAL TALK (WIN)</p>
+                                        <p class="text-sm mt-1">-> PHÁ BĂNG THÀNH CÔNG</p>
+                                    </div>
+                                    
+                                    <div class="bg-white border-2 border-black p-4">
+                                        <p class="text-xs text-gray-500 mb-1 font-bold">COMEBACK STAGE</p>
+                                        <p class="font-display font-bold text-xl md:text-2xl">GƯƠNG VỠ LÀM LÀNH</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="relative pl-14 md:pl-24">
+                            <div class="absolute left-4 md:left-8 top-8 w-6 h-6 bg-black border-4 border-brand-red outline outline-2 outline-gray-300 rounded-full z-10 -translate-x-1/2"></div>
+                            <div class="bg-black p-4 md:p-6 border-l-4 border-brand-red text-white">
+                                <h4 class="font-bold text-brand-red text-lg md:text-xl mb-2">TỔNG KẾT CÔNG DIỄN 3</h4>
+                                <p class="text-white font-bold text-base md:text-lg border-b border-white">KẾT THÚC HÀNH TRÌNH TẠI SHOW IT ALL VIETNAM 2025</span></p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="music" class="py-20 md:py-32 bg-black text-white border-t-8 border-brand-blue relative">
+        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20"></div>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-12 md:mb-20 border-b border-gray-800 pb-8">
+                <div>
+                    <h2 class="font-massive font-black text-5xl md:text-8xl text-white">Music Lab<span class="text-brand-acid">.</span></h2>
+                    <p class="font-tech text-gray-400 mt-4 tracking-widest text-sm md:text-base">Kho nhạc tại Tân Binh Toàn Năng - Show It All</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <a href="https://www.youtube.com/watch?v=lE_lkf2qUSw&pp=ygUHc2hvdyBtZQ%3D%3D" target="_blank" class="group block">
+                    <div class="bg-[#111] border border-gray-800 p-4 hover:bg-[#1a1a1a] transition hover:-translate-y-2 duration-300 h-full flex flex-col relative overflow-hidden">
+                        <div class="absolute top-2 right-4 text-gray-800 font-massive font-bold text-4xl group-hover:text-brand-blue/20 transition">01</div>
+                        <div class="relative aspect-square bg-gray-900 mb-4 overflow-hidden border border-gray-700 group-hover:border-brand-blue">
+                            <img src="https://scontent.fdad3-5.fna.fbcdn.net/v/t39.30808-6/492258654_2038129793333029_411430420358366551_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=a5f93a&_nc_eui2=AeEkwD3EtwWTG5PhoQd1Z3dK1XznkXIUT3vVfOeRchRPe_kzWtBhqK7QP3v3Frj6hmDnofwQzE1LPjaHF-vbnHiO&_nc_ohc=VPUXce7pp_EQ7kNvwEAHz3p&_nc_oc=AdmeLvF64oDR56B6SbzAY9UUSohV2OSlSJ11YqoJLP10oIz4oppNym0B-ky5Wn--JTA&_nc_zt=23&_nc_ht=scontent.fdad3-5.fna&_nc_gid=W0i021tIjZmiYOoBXqq6Zw&oh=00_AflG4TxJPl1coFfL5S5Dm9cJXETQ5Gk-mUFhXxIwamGHNw&oe=6936CBD5" class="img-cover opacity-100 group-hover:opacity-100 group-hover:scale-110 transition duration-500">
+                            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-black/40 backdrop-blur-sm">
+                                <i class="fa-solid fa-play text-4xl text-white"></i>
+                            </div>
+                        </div>
+                        <div class="mt-auto">
+                            <h3 class="font-display font-bold text-white text-xl leading-none mb-1 truncate">Show Me</h3>
+                            <p class="font-tech text-xs text-brand-blue font-bold uppercase tracking-wider">Họp Báo</p>
+                        </div>
+                    </div>
+                </a>
+                <a href="https://www.youtube.com/watch?v=FXX-c5GwFZE" target="_blank" class="group block">
+                    <div class="bg-[#111] border border-gray-800 p-4 hover:bg-[#1a1a1a] transition hover:-translate-y-2 duration-300 h-full flex flex-col relative overflow-hidden">
+                        <div class="absolute top-2 right-4 text-gray-800 font-massive font-bold text-4xl group-hover:text-brand-blue/20 transition">02</div>
+                        <div class="relative aspect-square bg-gray-900 mb-4 overflow-hidden border border-gray-700 group-hover:border-brand-blue">
+                            <img src="https://scontent.fdad3-1.fna.fbcdn.net/v/t39.30808-6/555865403_122160420782746458_6225389575931486955_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=f727a1&_nc_eui2=AeFVUe5RLqpACqwnNvn-9z0Jk42WlGixmrCTjZaUaLGasNTlbJmZR2NP8E3xAKfEP8KSxQIDicvFsh5U6yTf1ebA&_nc_ohc=Us301b862R4Q7kNvwFEVjzo&_nc_oc=Adlrqyg0aLa-xr-81UBy3DAegnGmQzoyzWAkLtBqWxIfJKPoB1x3EGNpxrBX4NLYQNQ&_nc_zt=23&_nc_ht=scontent.fdad3-1.fna&_nc_gid=nCSP2OCdIjzgZv4_h0wIOw&oh=00_AflSRwFgt7Ch4DgDjpotzRVu4G88__tJWHbFgBRb5Grbhg&oe=6936F4CD" class="img-cover opacity-100 group-hover:opacity-100 group-hover:scale-110 transition duration-500">
+                            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-black/40 backdrop-blur-sm">
+                                <i class="fa-solid fa-play text-4xl text-white"></i>
+                            </div>
+                        </div>
+                        <div class="mt-auto">
+                            <h3 class="font-display font-bold text-white text-xl leading-none mb-1 truncate">Show Me</h3>
+                            <p class="font-tech text-xs text-brand-blue font-bold uppercase tracking-wider">Top 11 Version</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=dSKGGzZLMFI" target="_blank" class="group block">
+                    <div class="bg-[#111] border border-gray-800 p-4 hover:bg-[#1a1a1a] transition hover:-translate-y-2 duration-300 h-full flex flex-col relative overflow-hidden">
+                        <div class="absolute top-2 right-4 text-gray-800 font-massive font-bold text-4xl group-hover:text-brand-blue/20 transition">03</div>
+                        <div class="relative aspect-square bg-gray-900 mb-4 overflow-hidden border border-gray-700 group-hover:border-brand-blue">
+                            <img src="https://scontent.fdad3-4.fna.fbcdn.net/v/t39.30808-6/495576340_2052798658532809_6025156035274308299_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeHcHEcDuEppDfmaIj9BzPPxnv0CY0lDHqKe_QJjSUMeos2xAiLJnZyfhxnDXhIWAf_WVcgbuGv1J34_UjS8pzpT&_nc_ohc=-zfJncxpIbgQ7kNvwGR2nW1&_nc_oc=Adkd6TXRzEEutesTAs8dXBaeMpUnWtE6YajIHOAIUq689G3MUiViH70q0cZ2F1ntg-8&_nc_zt=23&_nc_ht=scontent.fdad3-4.fna&_nc_gid=RrWH5ZDEDGb_8S0BpnXCsQ&oh=00_AfnyeNvT6G2pRivt-_uoZLEGjTGcRmuB3QiFRhHWV_3dsw&oe=6936DC37" class="img-cover opacity-100 group-hover:opacity-100 group-hover:scale-110 transition duration-500">
+                            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-black/40 backdrop-blur-sm">
+                                <i class="fa-solid fa-play text-4xl text-white"></i>
+                            </div>
+                        </div>
+                        <div class="mt-auto">
+                            <h3 class="font-display font-bold text-white text-xl leading-none mb-1 truncate">Beautiful Girl</h3>
+                            <p class="font-tech text-xs text-brand-blue font-bold uppercase tracking-wider">Sát hạch 4</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=AU6Pxb8ghKI" target="_blank" class="group block">
+                    <div class="bg-[#111] border border-gray-800 p-4 hover:bg-[#1a1a1a] transition hover:-translate-y-2 duration-300 h-full flex flex-col relative overflow-hidden">
+                        <div class="absolute top-2 right-4 text-gray-800 font-massive font-bold text-4xl group-hover:text-brand-blue/20 transition">04</div>
+                        <div class="relative aspect-square bg-gray-900 mb-4 overflow-hidden border border-gray-700 group-hover:border-brand-blue">
+                            <img src="https://scontent.fdad3-1.fna.fbcdn.net/v/t39.30808-6/503447418_122098085708897652_4501109507525636551_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeHpMVHRxcOQVmmj-WXm6M6ZxnnAo3VcjNPGecCjdVyM0yKVd0FLpXHUofBHZ4rKZHitEBZseblMmgVurPTW65s_&_nc_ohc=gQps8r_lxiwQ7kNvwH-TCMx&_nc_oc=Adlfz50CeEOOo1qJXah0_bS5XYYYr6cfFtU8sv-8mTlsWk17MFABmlBgmySTrhErazg&_nc_zt=23&_nc_ht=scontent.fdad3-1.fna&_nc_gid=Za_M5ZKSjtlzxzXjKLecnw&oh=00_AfnKBNrWO1VLXHF_PZN_7C_Zp_ekmEFL_u0TMpc37Ox8uw&oe=6936CC57" class="img-cover opacity-100 group-hover:opacity-100 group-hover:scale-110 transition duration-500">
+                            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-black/40 backdrop-blur-sm">
+                                <i class="fa-solid fa-play text-4xl text-white"></i>
+                            </div>
+                        </div>
+                        <div class="mt-auto">
+                            <h3 class="font-display font-bold text-white text-xl leading-none mb-1 truncate">Yêu 5</h3>
+                            <p class="font-tech text-xs text-brand-blue font-bold uppercase tracking-wider">Sát hạch 5</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=juTZYjQ94hg" target="_blank" class="group block">
+                    <div class="bg-[#111] border border-gray-800 p-4 hover:bg-[#1a1a1a] transition hover:-translate-y-2 duration-300 h-full flex flex-col relative overflow-hidden">
+                        <div class="absolute top-2 right-4 text-gray-800 font-massive font-bold text-4xl group-hover:text-brand-blue/20 transition">05</div>
+                        <div class="relative aspect-square bg-gray-900 mb-4 overflow-hidden border border-gray-700 group-hover:border-brand-blue">
+                            <img src="https://scontent.fdad3-1.fna.fbcdn.net/v/t39.30808-6/513087222_122113339676897652_4148194028803209053_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeHxO8GGUscmOM3dVNPX9eEw2bvo9UJaadvZu-j1Qlpp2yS0kMbRjDM4jfvx6rH6_V3-_PHmL3OkC-EJ_CsTq5CO&_nc_ohc=JiOZgmMs1OMQ7kNvwHBNUTc&_nc_oc=AdlePVOCWvJPNlX1Sxq4AfiMq7b7QjXTT39sXpGKic2RhiRW8gHzmAxbnbXC7harwbs&_nc_zt=23&_nc_ht=scontent.fdad3-1.fna&_nc_gid=kNXEkSP8IEcIe0jO__64BA&oh=00_Aflrr8xW9wszkHhhzzYJGKOz9mnO-HChmBhKDMEaeim-3g&oe=6936E2A9" class="img-cover opacity-100 group-hover:opacity-100 group-hover:scale-110 transition duration-500">
+                            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-black/40 backdrop-blur-sm">
+                                <i class="fa-solid fa-play text-4xl text-white"></i>
+                            </div>
+                        </div>
+                        <div class="mt-auto">
+                            <h3 class="font-display font-bold text-white text-xl leading-none mb-1 truncate">Em ơi cứ vui</h3>
+                            <p class="font-tech text-xs text-brand-blue font-bold uppercase tracking-wider">Sát hạch 6</p>
+                        </div>
+                    </div>
+                </a>                    
+
+                <a href="https://www.youtube.com/watch?v=3a6MouzWlOQ" target="_blank" class="group block">
+                    <div class="bg-[#111] border border-gray-800 p-4 hover:bg-[#1a1a1a] transition hover:-translate-y-2 duration-300 h-full flex flex-col relative overflow-hidden">
+                        <div class="absolute top-2 right-4 text-gray-800 font-massive font-bold text-4xl group-hover:text-brand-blue/20 transition">06</div>
+                        <div class="relative aspect-square bg-gray-900 mb-4 overflow-hidden border border-gray-700 group-hover:border-brand-blue">
+                            <img src="https://scontent.fdad3-4.fna.fbcdn.net/v/t39.30808-6/518270710_122119224350897652_8394388354363780722_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeHHGLMaP9IWrBqIwSaheBH4_mQltf4mR2v-ZCW1_iZHa91tpqgaX9UYG29Y0V0t4iQmJw-jYMevxNBzuGv5hYOB&_nc_ohc=OWl19SEMaioQ7kNvwHmB34c&_nc_oc=AdlV1XiYqyRSYlfnPtppKrnRDUeWeOygTBzJV3DrAA6rOJtV6dl1sdEHR9kGhAAz-cM&_nc_zt=23&_nc_ht=scontent.fdad3-4.fna&_nc_gid=YYa9-NFMERbjPg1_XxchTQ&oh=00_Afk8H0WvKIkDAdeJ3PnbUWPYPLW82x0v9d4i3NRZb614zA&oe=6936F600" class="img-cover opacity-100 group-hover:opacity-100 group-hover:scale-110 transition duration-500">
+                            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-black/40 backdrop-blur-sm">
+                                <i class="fa-solid fa-play text-4xl text-white"></i>
+                            </div>
+                        </div>
+                        <div class="mt-auto">
+                            <h3 class="font-display font-bold text-white text-xl leading-none mb-1 truncate">GenZnius</h3>
+                            <p class="font-tech text-xs text-brand-blue font-bold uppercase tracking-wider">Sát hạch 7</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=XGA9uaWIRH4" target="_blank" class="group block">
+                    <div class="bg-[#111] border border-gray-800 p-4 hover:bg-[#1a1a1a] transition hover:-translate-y-2 duration-300 h-full flex flex-col relative overflow-hidden">
+                        <div class="absolute top-2 right-4 text-gray-800 font-massive font-bold text-4xl group-hover:text-brand-blue/20 transition">07</div>
+                        <div class="relative aspect-square bg-gray-900 mb-4 overflow-hidden border border-gray-700 group-hover:border-brand-blue">
+                            <img src="https://scontent.fdad3-5.fna.fbcdn.net/v/t39.30808-6/527226989_122125614008897652_6977496286883073070_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeHyrm0ktB1UQE_0WnI-Zui39Dl-uYt07XH0OX65i3TtcWDL6BJi039yQkrOkMr4UdI2Gferzdw4BvJgGI3yiK1u&_nc_ohc=v5DrrKGKMPYQ7kNvwEGvgK5&_nc_oc=Adn5pNY98sREXgBVVkBNY8JSbktMmSHYgrxHaEiA2jK2vsfLmA2MNAp2pGx1aMJY7Dc&_nc_zt=23&_nc_ht=scontent.fdad3-5.fna&_nc_gid=GItsCIh1xMt77TsN-5trkA&oh=00_AfkgU4qPeFOWUpcNQUVZD2DE33KVZohnY6MPOfzh37VdZQ&oe=6936D233" class="img-cover opacity-100 group-hover:opacity-100 group-hover:scale-110 transition duration-500">
+                            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-black/40 backdrop-blur-sm">
+                                <i class="fa-solid fa-play text-4xl text-white"></i>
+                            </div>
+                        </div>
+                        <div class="mt-auto">
+                            <h3 class="font-display font-bold text-white text-xl leading-none mb-1 truncate">99kiss</h3>
+                            <p class="font-tech text-xs text-brand-blue font-bold uppercase tracking-wider">Chung Kết</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://youtu.be/Mm9FYmzbk-k?si=AWhg7iX0eqNq-fl1" target="_blank" class="group block">
+                    <div class="bg-[#111] border border-gray-800 p-4 hover:bg-[#1a1a1a] transition hover:-translate-y-2 duration-300 h-full flex flex-col relative overflow-hidden">
+                        <div class="absolute top-2 right-4 text-gray-800 font-massive font-bold text-4xl group-hover:text-brand-blue/20 transition">08</div>
+                        <div class="relative aspect-square bg-gray-900 mb-4 overflow-hidden border border-gray-700 group-hover:border-brand-blue">
+                            <img src="https://scontent.fdad3-4.fna.fbcdn.net/v/t39.30808-6/527698417_122125420706897652_2428706427662163076_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeGW19sXg6d0dMH5Dv9U6YN-pIVx8XNCN1-khXHxc0I3X8in_7n2ylBmNihdN0nzMaIv08KHRJomXlTuAtRSBOZR&_nc_ohc=4zWlauTPtisQ7kNvwGqB6rk&_nc_oc=AdmxQCiq5Wp2QoGWcb6jKy2VP0CrEqME8V1HoSfzkWS25wgLThtKJN1uZXheiyNthzY&_nc_zt=23&_nc_ht=scontent.fdad3-4.fna&_nc_gid=0PKICrCjVoNlpNycMaEqoQ&oh=00_AfkeUyfkE22WP9UOoR5b1TeiiddkSxVAf-KuMtzVTfOt6A&oe=6936D01B" class="img-cover opacity-100 group-hover:opacity-100 group-hover:scale-110 transition duration-500">
+                            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-black/40 backdrop-blur-sm">
+                                <i class="fa-solid fa-play text-4xl text-white"></i>
+                            </div>
+                        </div>
+                        <div class="mt-auto">
+                            <h3 class="font-display font-bold text-white text-xl leading-none mb-1 truncate">We Lit The Show</h3>
+                            <p class="font-tech text-xs text-brand-blue font-bold uppercase tracking-wider">Chung kết</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://youtu.be/DXSkTPcATTk?si=UsHCQ0tj1wzA7jJi" target="_blank" class="group block">
+                    <div class="bg-[#111] border border-gray-800 p-4 hover:bg-[#1a1a1a] transition hover:-translate-y-2 duration-300 h-full flex flex-col relative overflow-hidden">
+                        <div class="absolute top-2 right-4 text-gray-800 font-massive font-bold text-4xl group-hover:text-brand-blue/20 transition">09</div>
+                        <div class="relative aspect-square bg-gray-900 mb-4 overflow-hidden border border-gray-700 group-hover:border-brand-blue">
+                            <img src="https://scontent.fdad3-1.fna.fbcdn.net/v/t39.30808-6/558877250_122162282630746458_4461108897544998994_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=f727a1&_nc_eui2=AeGjAeU_unXvHT0ku1-akZU4WxVshXWFFM1bFWyFdYUUzfWO_TBw33s9bt-4IwBqMPS9p0nWoyGIVJsDsd8lHmwR&_nc_ohc=--Un_oMGQPMQ7kNvwEKUwrB&_nc_oc=Adkuk_xFTQTsMGp4VKaMPSeZ2yuZ3Ta-O3uR74LejS-FWjOVisNkQIlWE1R50ftkyvQ&_nc_zt=23&_nc_ht=scontent.fdad3-1.fna&_nc_gid=7Uiw23Xq6yvDfeweqmD1fw&oh=00_AflljQp05BGHU131q4ROns9yp7kZxEAJLUKyR69uFEt5rA&oe=6936E571" class="img-cover opacity-100 group-hover:opacity-100 group-hover:scale-110 transition duration-500">
+                            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-black/40 backdrop-blur-sm">
+                                <i class="fa-solid fa-play text-4xl text-white"></i>
+                            </div>
+                        </div>
+                        <div class="mt-auto">
+                            <h3 class="font-display font-bold text-white text-xl leading-none mb-1 truncate">Đã Đến Lúc</h3>
+                            <p class="font-tech text-xs text-brand-blue font-bold uppercase tracking-wider">Công Diễn 1</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://youtu.be/KJ_Fmen-bBs?si=9jcLtXHfWYk5DlyE" target="_blank" class="group block">
+                    <div class="bg-[#111] border border-gray-800 p-4 hover:bg-[#1a1a1a] transition hover:-translate-y-2 duration-300 h-full flex flex-col relative overflow-hidden">
+                        <div class="absolute top-2 right-4 text-gray-800 font-massive font-bold text-4xl group-hover:text-brand-blue/20 transition">10</div>
+                        <div class="relative aspect-square bg-gray-900 mb-4 overflow-hidden border border-gray-700 group-hover:border-brand-blue">
+                            <img src="https://scontent.fdad3-5.fna.fbcdn.net/v/t39.30808-6/559884585_122161604498746458_7903507419276732411_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeG_S3_Iipd-29X4EkOwc2uErkTTkH_XuLeuRNOQf9e4t26cWA6oS4wG73_0wJvFjarXSRfD9IJegbW3u8x62NSv&_nc_ohc=ZbTImdxb0xoQ7kNvwEJh_cO&_nc_oc=AdmFEYSHV6Qc2-jBblFAGm4mbpanDiJ2icT3uOqrONNbnJsaeVFg7dbztB4RxZCTCdY&_nc_zt=23&_nc_ht=scontent.fdad3-5.fna&_nc_gid=cY6d4HsquU5Xhz0Xe_DOdA&oh=00_AfkcBxwjRbQuIZ-tTYntT4CLZONwVnUXwzDombz-A4quHA&oe=6936D15D" class="img-cover opacity-100 group-hover:opacity-100 group-hover:scale-110 transition duration-500">
+                            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-black/40 backdrop-blur-sm">
+                                <i class="fa-solid fa-play text-4xl text-white"></i>
+                            </div>
+                        </div>
+                        <div class="mt-auto">
+                            <h3 class="font-display font-bold text-white text-xl leading-none mb-1 truncate">Exposure</h3>
+                            <p class="font-tech text-xs text-brand-blue font-bold uppercase tracking-wider">Công Diễn 1</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://youtu.be/4hwkHID-WQc?si=N9V2FMWpKVJb7Ow9" target="_blank" class="group block">
+                    <div class="bg-[#111] border border-gray-800 p-4 hover:bg-[#1a1a1a] transition hover:-translate-y-2 duration-300 h-full flex flex-col relative overflow-hidden">
+                        <div class="absolute top-2 right-4 text-gray-800 font-massive font-bold text-4xl group-hover:text-brand-blue/20 transition">11</div>
+                        <div class="relative aspect-square bg-gray-900 mb-4 overflow-hidden border border-gray-700 group-hover:border-brand-blue">
+                            <img src="https://scontent.fdad3-5.fna.fbcdn.net/v/t39.30808-6/561742359_122108322003032425_2062921369188767811_n.jpg?stp=cp6_dst-jpg_tt6&_nc_cat=107&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeEI6l-mP3bvf4Df24iI0uIUp4Mo6jVOnqqngyjqNU6eqmDcNhwAkyiYsP2BZ44bBXbGG3BsvkSsrBFmFCez3tP7&_nc_ohc=ozwP2n3JNC4Q7kNvwHIBKvx&_nc_oc=Adlgp6lFUhS3ABrcFEijtTxNO_1J3nP58BizvEXCp7kWQ4nds2mRr20WNbEjOyeVp7g&_nc_zt=23&_nc_ht=scontent.fdad3-5.fna&_nc_gid=2C85V1APmc2ZDtw4-0e9Wg&oh=00_AfnKQDJB4LrjUewmmhOhJmabBX0lcffsE-jkZnwBjV_hpw&oe=6936EB5F" class="img-cover opacity-100 group-hover:opacity-100 group-hover:scale-110 transition duration-500">
+                            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-black/40 backdrop-blur-sm">
+                                <i class="fa-solid fa-play text-4xl text-white"></i>
+                            </div>
+                        </div>
+                        <div class="mt-auto">
+                            <h3 class="font-display font-bold text-white text-xl leading-none mb-1 truncate">Không Cần Nói Nhiều</h3>
+                            <p class="font-tech text-xs text-brand-blue font-bold uppercase tracking-wider">Công Diễn 2</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://youtu.be/t6kY5szAkyg?si=yWHzdkvehDduA8Ky" target="_blank" class="group block">
+                    <div class="bg-[#111] border border-gray-800 p-4 hover:bg-[#1a1a1a] transition hover:-translate-y-2 duration-300 h-full flex flex-col relative overflow-hidden">
+                        <div class="absolute top-2 right-4 text-gray-800 font-massive font-bold text-4xl group-hover:text-brand-blue/20 transition">12</div>
+                        <div class="relative aspect-square bg-gray-900 mb-4 overflow-hidden border border-gray-700 group-hover:border-brand-blue">
+                            <img src="https://scontent.fdad3-5.fna.fbcdn.net/v/t39.30808-6/571192755_122109816879032425_7414924879441545169_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeGmpKhSaRf8lnN5S_XMAknc1CpQJ5NqdPHUKlAnk2p08aN-G_5iXAz6i0p6q-p1gxUMTJnGDCpd7HZBfsqD06gi&_nc_ohc=uvYhrAWz1CkQ7kNvwHZ3OAM&_nc_oc=AdkACHvw3E7i0iDJ0UQuL_cYhyq0eUKqdDR3xh2LSKi93fnPlObPLZfmqXRk4KC-5_8&_nc_zt=23&_nc_ht=scontent.fdad3-5.fna&_nc_gid=R4T5oZ1p53ZqDYYatM0Nlg&oh=00_AfkYYSbMfpYQyqp-fkngOhbcTIFSh-K382qKCVGFtUVUgA&oe=6936D966" class="img-cover opacity-100 group-hover:opacity-100 group-hover:scale-110 transition duration-500">
+                            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-black/40 backdrop-blur-sm">
+                                <i class="fa-solid fa-play text-4xl text-white"></i>
+                            </div>
+                        </div>
+                        <div class="mt-auto">
+                            <h3 class="font-display font-bold text-white text-xl leading-none mb-1 truncate">Take A Shot</h3>
+                            <p class="font-tech text-xs text-brand-blue font-bold uppercase tracking-wider">Công diễn 2</p>
+                        </div>
+                    </div>
+                </a>
+                
+                <a href="https://youtu.be/sVQyjzwTSt0?si=jGoRBrUAcmA-NXCL" target="_blank" class="group block">
+                    <div class="bg-[#111] border border-gray-800 p-4 hover:bg-[#1a1a1a] transition hover:-translate-y-2 duration-300 h-full flex flex-col relative overflow-hidden">
+                        <div class="absolute top-2 right-4 text-gray-800 font-massive font-bold text-4xl group-hover:text-brand-blue/20 transition">13</div>
+                        <div class="relative aspect-square bg-gray-900 mb-4 overflow-hidden border border-gray-700 group-hover:border-brand-blue">
+                            <img src="https://scontent.fdad3-5.fna.fbcdn.net/v/t39.30808-6/571668017_122109979167032425_5613219174146952698_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeHgVpgdVyHsU_rlZsjUdYtdOwsx-lvFK1U7CzH6W8UrVfjoWX629WjagtRi6GNHOaaLsOlyOk6etlFMQekWJF5g&_nc_ohc=Uau0bMJaIagQ7kNvwG0fPuV&_nc_oc=AdkgJRdjAT6rJtZ9VpKh4OoFFl7lWBBsjuoN2lAL8aLxujMR9Pt6RGqicOk9IqlHldc&_nc_zt=23&_nc_ht=scontent.fdad3-5.fna&_nc_gid=4-LhLkJX9IgWT8DUKXSyRw&oh=00_AfkEGb9GsMUluLf6Ea2LBGR2zZZCPHyLJLEf2LgOAzS29w&oe=6936D90C" class="img-cover opacity-100 group-hover:opacity-100 group-hover:scale-110 transition duration-500">
+                            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-black/40 backdrop-blur-sm">
+                                <i class="fa-solid fa-play text-4xl text-white"></i>
+                            </div>
+                        </div>
+                        <div class="mt-auto">
+                            <h3 class="font-display font-bold text-white text-xl leading-none mb-1 truncate">Beautiful Girl</h3>
+                            <p class="font-tech text-xs text-brand-blue font-bold uppercase tracking-wider">Công diễn 2</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://youtu.be/Df3mJOn4BkM?si=o4jge5IBTOqXKLx-" target="_blank" class="group block">
+                    <div class="bg-[#111] border border-gray-800 p-4 hover:bg-[#1a1a1a] transition hover:-translate-y-2 duration-300 h-full flex flex-col relative overflow-hidden">
+                        <div class="absolute top-2 right-4 text-gray-800 font-massive font-bold text-4xl group-hover:text-brand-blue/20 transition">14</div>
+                        <div class="relative aspect-square bg-gray-900 mb-4 overflow-hidden border border-gray-700 group-hover:border-brand-blue">
+                            <img src="https://scontent.fdad3-4.fna.fbcdn.net/v/t39.30808-6/587122297_122113473939032425_178922097066641071_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeGWtFnzxxVkWEZFWKSDnsg5Z-IPAcstDOFn4g8Byy0M4c45BPeuUeWJ3grbHL51W7ka2619VCiUSmeu5428-aGU&_nc_ohc=3KOP_Fq2QvIQ7kNvwFiB4gp&_nc_oc=AdlnPInbmy1RwKvptPRVEdkQLGcZpsqhmXCG1R_Mx0QvFzSScO5g8JjdBCaFR0dtJqM&_nc_zt=23&_nc_ht=scontent.fdad3-4.fna&_nc_gid=KsNNijvArvwHqxd40sk_kQ&oh=00_AfnJgRfxARNFc7nEOF4VSqIBaIKSl4KIiH7zPCaC-LLFUg&oe=693702E6" class="img-cover opacity-100 group-hover:opacity-100 group-hover:scale-110 transition duration-500">
+                            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-black/40 backdrop-blur-sm">
+                                <i class="fa-solid fa-play text-4xl text-white"></i>
+                            </div>
+                        </div>
+                        <div class="mt-auto">
+                            <h3 class="font-display font-bold text-white text-xl leading-none mb-1 truncate">Gương Vỡ Làm Lành</h3>
+                            <p class="font-tech text-xs text-brand-blue font-bold uppercase tracking-wider">Công diễn 3</p>
+                        </div>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-brand-blue text-white pt-20 md:pt-32 pb-6 md:pb-10 relative overflow-hidden">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="font-massive font-black text-6xl md:text-[15rem] leading-none text-black opacity-20 select-none hover:text-white hover:opacity-100 transition duration-700 cursor-default">
+                minhtin
+            </h2>
+            <div class="mt-12 md:mt-24 pt-8 border-t border-white/20 flex flex-col md:flex-row justify-between text-xs font-tech font-bold uppercase gap-4 md:gap-0">
+                <p>© Always Beside minhtin>
+                <p>Designed by DucNhat.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // CURSOR ANIMATION
+        const cursor = document.getElementById('cursor');
+        const follower = document.getElementById('cursor-follower');
+        
+        document.addEventListener('mousemove', (e) => {
+            gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.1 });
+            gsap.to(follower, { x: e.clientX, y: e.clientY, duration: 0.3 });
+        });
+
+        document.querySelectorAll('a, .cursor-hover').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                gsap.to(follower, { scale: 2, borderColor: '#CCFF00', duration: 0.3 });
+                gsap.to(cursor, { scale: 0.5, backgroundColor: 'transparent', duration: 0.3 });
+            });
+            el.addEventListener('mouseleave', () => {
+                gsap.to(follower, { scale: 1, borderColor: '#0029FF', duration: 0.3 });
+                gsap.to(cursor, { scale: 1, backgroundColor: '#0029FF', duration: 0.3 });
+            });
+        });
+
+        // PRELOADER
+        window.addEventListener('load', () => {
+            const tl = gsap.timeline();
+            tl.to("#loader-bar", { width: "100%", duration: 0.8, ease: "power2.inOut" })
+              .to("#loader-text", { y: -100, opacity: 0, duration: 0.5 })
+              .to("#loader", { yPercent: -100, duration: 1, ease: "expo.inOut" })
+              .from("header h1", { y: 100, opacity: 0, duration: 1, ease: "power4.out" });
+        });
+        
+        // SCROLL TRIGGER
+        gsap.registerPlugin(ScrollTrigger);
+        gsap.utils.toArray('.neo-card').forEach(el => {
+            gsap.from(el, {
+                scrollTrigger: { trigger: el, start: "top 90%" },
+                y: 30, opacity: 0, duration: 0.6, ease: "power2.out"
+            });
+        });
+    </script>
+</body>
+</html>
